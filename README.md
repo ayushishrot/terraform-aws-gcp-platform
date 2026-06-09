@@ -90,8 +90,8 @@ terraform apply -var-file=terraform.tfvars
 ## Conventions
 
 - **Remote state** in S3 with a DynamoDB lock table (`environments/*/backend.tf`).
-- **Least privilege** — IAM via IRSA, no node-wide policies; RDS credentials live in Secrets Manager, never in state output as plaintext.
-- **Tagging** — every resource carries `Environment`, `Owner`, `ManagedBy=terraform`, `CostCenter`.
+- **Least privilege**  IAM via IRSA, no node-wide policies; RDS credentials live in Secrets Manager, never in state output as plaintext.
+- **Tagging**  every resource carries `Environment`, `Owner`, `ManagedBy=terraform`, `CostCenter`.
 - **`terraform fmt` + `validate`** enforced in CI on every PR (`.github/workflows/terraform.yml`).
 
 ## Repo layout
