@@ -1,0 +1,51 @@
+name: terraform-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: fmt + validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir:
+          - modules/aws-vpc
+          - modules/aws-eks
+          - modules/aws-rds
+          - modules/aws-alb
+          - modules/aws-iam-irsa
+          - modules/gcp-gke
+          - environments/dev
+          - environments/prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive ${{ matrix.dir }}
+
+      - name: terraform init (no backend)
+        working-directory: ${{ matrix.dir }}
+        run: terraform init -backend=false
+
+      - name: terraform validate
+        working-directory: ${{ matrix.dir }}
+        run: terraform validate
+
+  tflint:
+    name: tflint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: terraform-linters/setup-tflint@v4
+      - run: tflint --recursive
